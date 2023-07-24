@@ -1,36 +1,37 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
 
-const dummy_events = [
-  {
-    id: "e1",
-    name: "party",
-    decscription: "Party all night",
-  },
-  {
-    id: "e2",
-    name: "baby shower",
-    decscription: "2 Baby showers",
-  },
-  {
-    id: "e3",
-    name: "Farewell",
-    decscription: "Farewell for 10th std",
-  },
-];
-const Events = () => {
+import EventsList from '../components/EventsList';
+
+function EventsPage() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [fetchedEvents, setFetchedEvents] = useState();
+  const [error, setError] = useState();
+
+  useEffect(() => {
+    async function fetchEvents() { 
+      setIsLoading(true);
+      const response = await fetch('http://localhost:8080/events');
+
+      if (!response.ok) {
+        setError('Fetching events failed.');
+      } else {
+        const resData = await response.json();
+        setFetchedEvents(resData.events);
+      }
+      setIsLoading(false);
+    }
+
+    fetchEvents();
+  }, []);
   return (
-    <div>
-      <h2>Events page </h2>
-      <ul>
-        {dummy_events.map((eve) => (
-          <li key={eve.id}>
-            {/* {eve.name} - {eve.decscription} */}
-            <Link to={`/events/${eve.id}`}>{eve.name} : {eve.decscription}</Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <div style={{ textAlign: 'center' }}>
+        {isLoading && <p>Loading...</p>}
+        {error && <p>{error}</p>}
+      </div>
+      {!isLoading && fetchedEvents && <EventsList events={fetchedEvents} />}
+    </>
   );
-};
+}
 
-export default Events;
+export default EventsPage;

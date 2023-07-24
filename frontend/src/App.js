@@ -25,13 +25,26 @@ function App() {
   return (
     <div>
       <Router>
-        <MainNavigation/>
+        <MainNavigation />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/events" element={<Events/>} />
-          <Route path="/events/:id" element={<EventDetail/>} />
-          <Route path="/events/new" element={<NewEvent/>} />
-          <Route path='/events/:id/edit' element={<EditEvent/>}/>
+          <Route
+            path="/events"
+            element={<Events />}
+            loader={async () => {
+              const response = await fetch("http://localhost:8080/events");
+
+              if (!response.ok) {
+                setError("Fetching events failed.");
+              } else {
+                const resData = await response.json();
+                setFetchedEvents(resData.events);
+              }
+            }}
+          />
+          <Route path="/events/:id" element={<EventDetail />} />
+          <Route path="/events/new" element={<NewEvent />} />
+          <Route path="/events/:id/edit" element={<EditEvent />} />
         </Routes>
       </Router>
     </div>
