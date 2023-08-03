@@ -1,14 +1,10 @@
-import { useState } from 'react';
-import { Form } from 'react-router-dom';
+import { Form,Link,useSearchParams } from 'react-router-dom';
 
 import classes from './AuthForm.module.css';
 
 function AuthForm() {
-  const [isLogin, setIsLogin] = useState(true);
-
-  function switchAuthHandler() {
-    setIsLogin((isCurrentlyLogin) => !isCurrentlyLogin);
-  }
+  const [searchParams,setSearchParams] = useSearchParams();
+  const isLogin = searchParams.get('mode') === 'login'; //allows us to retrieve the value for a specific parameter
 
   return (
     <>
@@ -23,9 +19,8 @@ function AuthForm() {
           <input id="password" type="password" name="password" required />
         </p>
         <div className={classes.actions}>
-          <button onClick={switchAuthHandler} type="button">
-            {isLogin ? 'Create new user' : 'Login'}
-          </button>
+         
+          <Link to={`?mode=${isLogin ? 'signup' : 'login'}`}>{isLogin ? 'Create new user' : 'login'}</Link>
           <button>Save</button>
         </div>
       </Form>
